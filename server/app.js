@@ -1,39 +1,43 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import mongoose from "mongoose";
+import connectDB from "./config/db.js";
+import authRoutes from "./routes/authRoutes.js";
 
 // Load environment variables
 dotenv.config();
 
+// Connect to Database
+connectDB();
+
 const app = express();
 
 // Middleware
-app.use(cors()); // Allows your Next.js frontend to connect
-app.use(express.json()); // Built-in body parser for JSON
+app.use(cors());
+app.use(express.json());
 
-// Basic Route
+// Routes
+app.use("/api/auth", authRoutes);
+
+// Root Health Check
 app.get("/", (req, res) => {
-  res.send("AI Travel Planner API is running with ES6 Modules...");
+  res.send("AI Travel Planner API is running...");
 });
 
-// Database Connection (Placeholder for now)
-const connectDB = async () => {
-  try {
-    // await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB connection logic goes here...");
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
-  }
-};
+// Global Error Handler
+app.use((err, req, res, next) => {
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  res.status(statusCode).json({
+    message: err.message,
+    stack: process.env.NODE_ENV === "production" ? null : err.stack,
+  });
+});
 
-// Start Server
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(
-    `Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`,
+    `Server running in ${process.env.NODE_ENV || "development"} mode on port http://localhost:${PORT}`,
   );
 });
 
