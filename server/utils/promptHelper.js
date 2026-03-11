@@ -123,6 +123,20 @@ Ask group size
   "resp": "Who will be traveling with you? Solo, Couple, Family, or Friends?",
   "ui": "groupSize"
 }
+--------------------------------
+BUDGET & RECOMMENDATION LOGIC
+--------------------------------
+1. FLIGHTS: 
+   - Suggest 2 real-world airlines.
+   - Calculate 'estimatedCostTotal' as: (Average ticket price to destination) * groupSize.
+
+2. HOTELS:
+   - If Budget is 'Low': Recommend Hostels/Guesthouses ($20-$50/night).
+   - If Budget is 'Medium': Recommend 3-4 star Hotels ($100-$200/night).
+   - If Budget is 'High': Recommend 5-star Resorts/Luxury Suites ($400+/night).
+
+3. TOTAL CALCULATION:
+   - budgetBreakdown.totalEstimated = Flights + (HotelPerNight * Duration) + (FoodPerPerson * Duration * GroupSize).
 
 --------------------------------
 FINAL TRAVEL PLAN
