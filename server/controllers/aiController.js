@@ -13,7 +13,7 @@ export const getTravelPlan = async (req, res) => {
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash", // Using the latest stable high-speed model
+      model: "gemini-3-flash-preview", // Using the latest stable high-speed model
       contents: [
         {
           role: "user",
