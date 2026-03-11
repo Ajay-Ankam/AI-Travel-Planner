@@ -6,12 +6,11 @@ import {
   deleteTrip,
 } from "../controllers/tripController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import { regenerateTripDay } from "../controllers/tripController.js";
 
 const router = express.Router();
 
 // All trip routes require authentication
-router.use(protect);
-
 router.use(protect);
 
 // --- Base Routes (/api/trips) ---
@@ -29,5 +28,8 @@ router.put("/:id", updateTrip);
 
 // Delete a specific trip
 router.delete("/:id", deleteTrip);
+
+// Dynamic Refinement Route
+router.post('/:id/regenerate-day', regenerateTripDay);
 
 export default router;
