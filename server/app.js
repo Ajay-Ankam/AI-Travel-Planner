@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
+import tripRoutes from "./routes/tripRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 // Load environment variables
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 // Global Error Handler
 app.use(notFound);
 app.use(errorHandler);
+app.use("/api/trips", tripRoutes);
 
 const PORT = process.env.PORT || 5000;
 
