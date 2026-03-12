@@ -8,14 +8,12 @@ export default function Home() {
 
   return (
     <div className="relative isolate overflow-hidden min-h-screen flex items-center">
-      {/* Background Decorative Gradients - Keep Aesthetics */}
+      {/* Background Decorative Gradients - Aesthetics Maintained */}
       <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
         <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-blue-200 to-indigo-400 opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
       </div>
 
-      {/* FIXED: Max-width and centering container for ALL content */}
       <div className="max-w-7xl mx-auto px-6 py-16 sm:py-24 lg:px-8">
-        {/* FIXED: Used a centered grid structure on desktop */}
         <div className="grid grid-cols-1 gap-y-16 lg:grid-cols-2 lg:gap-x-16 lg:items-center">
           {/* Hero Content (Left Side) */}
           <div className="max-w-2xl mx-auto lg:mx-0">
@@ -34,8 +32,9 @@ export default function Home() {
               gems in seconds.
             </p>
             <div className="mt-12 flex flex-col sm:flex-row items-center gap-6">
+              {/* UPDATED: Redirects to /create-trip if logged in */}
               <Link
-                href={user ? "/chat" : "/register"}
+                href={user ? "/create-trip" : "/register"}
                 className="w-full sm:w-auto rounded-xl bg-blue-600 px-8 py-4 text-base font-semibold text-white shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 flex items-center justify-center gap-2 transition-all active:scale-95 shadow-blue-100"
               >
                 Start Planning Now <ArrowRight className="h-5 w-5" />
@@ -49,7 +48,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Feature Cards Grid (Right Side) - Now constrained */}
+          {/* Feature Cards Grid (Right Side) */}
           <div className="mx-auto mt-16 lg:mt-0 w-full max-w-2xl">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <FeatureCard
@@ -62,12 +61,11 @@ export default function Home() {
                 title="Budget Estimates"
                 desc="Calculated costs for flights, hotels, and daily spending."
               />
-              {/* This card is visible on small screens and grid on medium+ */}
               <FeatureCard
                 icon={<Plane className="text-sky-600 h-6 w-6" />}
                 title="Live Recommendations"
                 desc="Real-world airline and hotel suggestions based on your tier."
-                className="sm:col-span-2" // Important adjustment for 3rd card
+                className="sm:col-span-2"
               />
             </div>
           </div>

@@ -22,6 +22,7 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/trips", tripRoutes);
 
 // Root Health Check
 app.get("/", (req, res) => {
@@ -31,7 +32,7 @@ app.get("/", (req, res) => {
 // Global Error Handler
 app.use(notFound);
 app.use(errorHandler);
-app.use("/api/trips", tripRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 

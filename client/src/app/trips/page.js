@@ -10,6 +10,7 @@ import {
   Plus,
   Loader2,
   ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import Button from "@/components/UI/Button";
 
@@ -64,7 +65,8 @@ export default function TripsDashboard() {
             You have planned {trips.length} trips so far.
           </p>
         </div>
-        <Link href="/chat">
+        {/* UPDATED: Points to /create-trip */}
+        <Link href="/create-trip">
           <Button className="flex items-center gap-2 px-8">
             <Plus size={20} /> Plan New Trip
           </Button>
@@ -82,8 +84,11 @@ export default function TripsDashboard() {
             Your travel history is empty. Let's start building your dream
             itinerary!
           </p>
-          <Link href="/chat" className="mt-8 inline-block">
-            <Button variant="outline">Start Chatting with AI</Button>
+          {/* UPDATED: Link and Text changed from "Chatting" to "Planning" */}
+          <Link href="/create-trip" className="mt-8 inline-block">
+            <Button variant="outline" className="flex items-center gap-2">
+              <Sparkles size={18} /> Start Planning with AI
+            </Button>
           </Link>
         </div>
       ) : (
