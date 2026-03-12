@@ -9,15 +9,16 @@ import {
   User,
   LogOut,
   LayoutDashboard,
-  MessageSquare,
+  Sparkles, 
 } from "lucide-react";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
+  // UPDATED: Points to /create-trip instead of /chat
   const navigation = [
-    { name: "AI Planner", href: "/chat", icon: MessageSquare },
+    { name: "Plan a Trip", href: "/create-trip", icon: Sparkles },
     { name: "My Trips", href: "/trips", icon: LayoutDashboard },
   ];
 

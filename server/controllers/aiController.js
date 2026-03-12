@@ -1,88 +1,62 @@
 import { GoogleGenAI } from "@google/genai";
-import { TRAVEL_PLANNER_PROMPT } from "../utils/promptHelper.js";
+import { generateTripPrompt } from "../utils/promptHelper.js";
+import Trip from "../models/Trip.js"; // IMPORT TRIP MODEL
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export const getTravelPlan = async (req, res) => {
-  const { message, history } = req.body;
+  const { formData } = req.body;
+
+  if (!formData) {
+    return res.status(400).json({ error: "Missing trip details." });
+  }
 
   try {
+    const promptText = generateTripPrompt(formData);
+
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: [
         {
           role: "user",
           parts: [
-            {
-              text: `${TRAVEL_PLANNER_PROMPT}
-              
-              Conversation History:
-              ${JSON.stringify(history)}
-              
-              User Message:
-              ${message}
-              
-              Remember: Respond ONLY in valid JSON format.`,
-            },
+            { text: `${promptText}\nRemember: Respond ONLY in valid JSON.` },
           ],
         },
       ],
     });
 
-    // Clean the response: sometimes LLMs wrap JSON in markdown blocks
     let cleanedText = response.text.replace(/```json|```/g, "").trim();
-    const parsedData = JSON.parse(cleanedText);
+    let parsedData = JSON.parse(cleanedText);
 
-    // --- BUDGET & RECOMMENDATION VALIDATION ---
-    if (parsedData.ui === "final" && typeof parsedData.resp === "object") {
-      const plan = parsedData.resp;
-      const groupMultiplier = parseInt(plan.tripSummary?.totalGroupSize) || 1;
-      const duration = parseInt(plan.tripSummary?.duration) || 1;
+    // Get the actual data object (handle potential 'resp' wrapper from helper)
+    const tripData = parsedData.resp || parsedData;
 
-      // 1. Validate Flight Totals (Ensure it's per group, not per person)
-      if (plan.flightRecommendations) {
-        plan.flightRecommendations = plan.flightRecommendations.map(
-          (flight) => ({
-            ...flight,
-            // If the AI gave a tiny number, it likely forgot the multiplier
-            estimatedCostTotal:
-              flight.estimatedCostTotal < 100
-                ? flight.estimatedCostTotal * groupMultiplier
-                : flight.estimatedCostTotal,
-          }),
-        );
-      }
+    // --- SAVE TO DATABASE ---
+    const newTrip = new Trip({
+      user: req.user._id, // Available via 'protect' middleware
+      source: formData.source,
+      destination: formData.destination,
+      duration: formData.duration,
+      budget: formData.budget,
+      groupSize: formData.groupSize,
+      interests: formData.interests || [],
+      // Map AI response fields to Schema fields
+      itinerary: tripData.itinerary,
+      hotelOptions: tripData.hotelOptions,
+      flightDetails: tripData.flightDetails,
+      budgetBreakdown: tripData.budgetBreakdown,
+    });
 
-      // 2. Sync the Budget Breakdown
-      // We ensure the totalEstimated field matches the sum of its parts
-      if (plan.budgetBreakdown) {
-        const { flights, accommodation, food, activities } =
-          plan.budgetBreakdown;
-        plan.budgetBreakdown.totalEstimated =
-          flights + accommodation + food + activities;
-      }
-    }
+    const savedTrip = await newTrip.save();
 
-    res.status(200).json(parsedData);
+    // Send the saved trip (with its new _id) back to frontend
+    res.status(201).json(savedTrip);
   } catch (error) {
     console.error("AI Generation Error:", error);
-
-    // Handle Rate Limiting Specifically
-    if (error.status === 429) {
-      return res.status(429).json({
-        resp: "The travel agent is currently busy. Please wait a moment before asking again.",
-        ui: "error",
-      });
-    }
-
-    res.status(500).json({
-      resp: "I'm having trouble processing that right now. Could we try again?",
-      ui: "source",
-    });
+    res.status(500).json({ error: "Failed to generate and save trip." });
   }
 };
